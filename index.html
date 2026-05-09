@@ -31,7 +31,7 @@
   .header-title {
     font-size: 20px;
     font-weight: 700;
-    color: #cd9041;
+    color: #B87A2A;
     margin-bottom: 3px;
     letter-spacing: 0.01em;
   }
@@ -243,7 +243,15 @@
   </div>
 
   <div class="card">
-    <div class="card-title">بيانات العميل</div>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #B87A2A;">
+      <div style="font-size:15px; font-weight:700; color:#1C243A; display:flex; align-items:center; gap:8px;">
+        <span style="display:inline-block;width:4px;height:18px;background:#B87A2A;border-radius:2px;"></span>
+        بيانات العميل
+      </div>
+      <button onclick="openManageClients()" style="padding:5px 14px; background:none; border:1.5px solid #B87A2A; color:#7a4f00; border-radius:8px; font-size:13px; cursor:pointer; font-family:inherit;">
+        ✏️ إدارة القائمة
+      </button>
+    </div>
     <div class="row">
       <div class="field">
         <label>اسم العميل</label>
@@ -306,6 +314,17 @@
   <button class="copy-btn" onclick="copyText()">📋 نسخ بيانات الفاتورة</button>
 
   <div class="footer">شركة الخيط الذهبي للمقاولات العامة &mdash; جميع الحقوق محفوظة</div>
+
+<!-- Manage Clients Modal -->
+<div id="modal-overlay" onclick="closeManageClients()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000;"></div>
+<div id="modal-box" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:16px; padding:24px; width:90%; max-width:420px; z-index:1001; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #B87A2A;">
+    <div style="font-size:16px; font-weight:700; color:#1C243A;">إدارة قائمة العملاء</div>
+    <button onclick="closeManageClients()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#666; line-height:1;">×</button>
+  </div>
+  <div style="font-size:12px; color:#9a8e7a; margin-bottom:12px;">العملاء الأصليون لا يمكن حذفهم. فقط العملاء المضافون يدوياً قابلون للحذف.</div>
+  <div id="modal-list" style="max-height:300px; overflow-y:auto;"></div>
+</div>
 
 </div>
 
@@ -473,11 +492,11 @@ function copyText() {
 
 // ── Default clients (always present) ──
 var DEFAULT_CLIENTS = [
-  'مؤسسة الشروق الرائدة',
-  'جامعة نجران',
-  'شركة سالم آل حارث',
-  'شركة تأسيس',
-  'شركة درب'
+  'شركة الأمل للتجارة',
+  'مؤسسة النور',
+  'شركة الخليج الحديثة',
+  'مكتب الرياض للاستشارات',
+  'شركة الفجر للمقاولات'
 ];
 
 function getSavedClients() {
@@ -559,6 +578,57 @@ function getClientName() {
 document.getElementById('inv-date').valueAsDate = new Date();
 buildClientSelect();
 addItem();
+
+function openManageClients() {
+  var saved   = getSavedClients();
+  var list    = document.getElementById('modal-list');
+  list.innerHTML = '';
+
+  // Show default clients (non-deletable)
+  DEFAULT_CLIENTS.forEach(function(name) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:8px; margin-bottom:6px; background:#f9f9f9; border:1px solid #ece8e0;';
+    row.innerHTML = '<span style="font-size:14px; color:#444;">' + name + '</span>' +
+      '<span style="font-size:11px; color:#b0a090; background:#f0ece4; padding:3px 8px; border-radius:10px;">أصلي</span>';
+    list.appendChild(row);
+  });
+
+  if (saved.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center; color:#9a8e7a; font-size:13px; padding:16px 0; margin-top:8px; border-top:1px solid #f0ece4;';
+    empty.textContent = 'لا يوجد عملاء مضافون بعد';
+    list.appendChild(empty);
+  } else {
+    var sep = document.createElement('div');
+    sep.style.cssText = 'font-size:12px; color:#9a8e7a; margin:12px 0 8px; padding-top:10px; border-top:1px solid #f0ece4;';
+    sep.textContent = 'العملاء المضافون يدوياً:';
+    list.appendChild(sep);
+
+    saved.forEach(function(name) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:8px; margin-bottom:6px; background:#fdf6e8; border:1px solid #e8d9b8;';
+      row.innerHTML = '<span style="font-size:14px; color:#1a1a1a;">' + name + '</span>' +
+        '<button onclick="deleteClient(\'' + name.replace(/'/g, "\'") + '\')" style="padding:4px 12px; background:none; border:1.5px solid #fca5a5; color:#dc2626; border-radius:7px; font-size:12px; cursor:pointer; font-family:inherit;">حذف</button>';
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('modal-overlay').style.display = 'block';
+  document.getElementById('modal-box').style.display     = 'block';
+}
+
+function closeManageClients() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  document.getElementById('modal-box').style.display     = 'none';
+}
+
+function deleteClient(name) {
+  if (!confirm('هل تريد حذف العميل: ' + name + '؟')) return;
+  var saved = getSavedClients().filter(function(n){ return n !== name; });
+  saveClientsList(saved);
+  buildClientSelect();
+  openManageClients();
+}
 </script>
 </body>
 </html>
