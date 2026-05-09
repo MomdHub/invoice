@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج الفاتورة - شركة الخيط الذهبي</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    direction: rtl;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f0ece4;
+    color: #1a1a1a;
+    padding: 20px;
+    font-size: 16px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  .header {
+    background: #1C243A;
+    border-radius: 16px;
+    padding: 20px 28px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-bottom: 4px solid #B87A2A;
+  }
+
+  .header-text { flex: 1; }
+  .header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #B87A2A;
+    margin-bottom: 3px;
+    letter-spacing: 0.01em;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: #C79A2D;
+    opacity: 0.85;
+  }
+  .header-badge {
+    background: #B87A2A;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2d9c8;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1C243A;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #B87A2A;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #B87A2A;
+    border-radius: 2px;
+  }
+
+  .row { display: flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 180px; }
+  .field label { font-size: 13px; color: #5a4e3a; font-weight: 600; }
+  .field select,
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="date"] {
+    direction: rtl;
+    text-align: right;
+    font-size: 16px;
+    padding: 11px 13px;
+    border: 1.5px solid #d4c9b0;
+    border-radius: 9px;
+    background: #faf8f4;
+    color: #1a1a1a;
+    width: 100%;
+    font-family: inherit;
+  }
+  .field select:focus,
+  .field input:focus {
+    outline: none;
+    border-color: #B87A2A;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(184,122,42,0.15);
+  }
+  .auto-val {
+    font-size: 16px;
+    padding: 11px 13px;
+    border: 1.5px solid #e2d9c8;
+    border-radius: 9px;
+    background: #fdf6e8;
+    color: #7a4f00;
+    font-weight: 700;
+    text-align: left;
+    direction: ltr;
+  }
+
+  .item-card {
+    background: #faf8f4;
+    border: 1.5px solid #e2d9c8;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    border-right: 4px solid #B87A2A;
+  }
+  .item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .item-badge {
+    background: #1C243A;
+    color: #C79A2D;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+  .remove-btn {
+    background: none;
+    border: 1.5px solid #fca5a5;
+    color: #dc2626;
+    border-radius: 8px;
+    padding: 5px 13px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .remove-btn:hover { background: #fee2e2; }
+
+  .add-btn {
+    width: 100%;
+    padding: 13px;
+    border: 2px dashed #C79A2D;
+    border-radius: 12px;
+    background: none;
+    color: #7a4f00;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 18px;
+    font-family: inherit;
+  }
+  .add-btn:hover { background: #fdf6e8; }
+
+  .totals-card {
+    background: #1C243A;
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    font-size: 15px;
+    color: #c8bfa8;
+    border-bottom: 1px solid rgba(199,154,45,0.2);
+  }
+  .total-row:last-child { border-bottom: none; padding-top: 16px; margin-top: 6px; }
+  .total-row.final { font-size: 18px; font-weight: 700; color: white; }
+  .total-val { font-weight: 600; direction: ltr; font-size: 15px; color: #C79A2D; }
+  .total-row.final .total-val { font-size: 22px; color: #C79A2D; }
+
+  .send-btn {
+    width: 100%;
+    padding: 16px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 10px;
+  }
+  .send-btn:hover { background: #1ebe5c; }
+  .send-btn:active { transform: scale(0.99); }
+
+  .copy-btn {
+    width: 100%;
+    padding: 14px;
+    background: white;
+    color: #1C243A;
+    border: 2px solid #1C243A;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .copy-btn:hover { background: #f0ece4; }
+
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #9a8e7a;
+    margin-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  @media (max-width: 500px) {
+    body { padding: 12px; }
+    .row { flex-direction: column; }
+    .field { min-width: 100%; }
+    .header { flex-direction: column; text-align: center; gap: 12px; }
+    .header-badge { align-self: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    
+    <div class="header-text">
+      <div class="header-title">شركة الخيط الذهبي للمقاولات العامة</div>
+      <div class="header-sub">نموذج إدخال الفاتورة</div>
+    </div>
+    <div class="header-badge">📄 فاتورة</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">بيانات العميل</div>
+    <div class="row">
+      <div class="field">
+        <label>اسم العميل</label>
+        <select id="client" onchange="toggleNewClient()">
+          <option value="">— اختر العميل —</option>
+        </select>
+        <div id="new-client-wrap" style="display:none; margin-top:8px; position:relative;">
+          <input type="text" id="client-new" placeholder="اكتب اسم العميل الجديد هنا..." style="direction:rtl; text-align:right; font-size:16px; padding:11px 13px; border:1.5px solid #B87A2A; border-radius:9px; background:#faf8f4; width:100%; font-family:inherit;">
+          <button onclick="saveNewClient()" style="margin-top:8px; width:100%; padding:10px; background:#B87A2A; color:white; border:none; border-radius:9px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;">حفظ العميل وإضافته للقائمة</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>تاريخ الفاتورة</label>
+        <input type="date" id="inv-date">
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:16px 24px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="font-size:14px; font-weight:700; color:#1C243A;">نوع الأسعار المدخلة</div>
+      <div style="display:flex; background:#f0ece4; border-radius:10px; padding:4px; gap:4px;">
+        <button id="btn-ex-tax" onclick="setTaxMode('exclusive')"
+          style="padding:8px 18px; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; background:#1C243A; color:#C79A2D;">
+          أسعار بدون ضريبة
+        </button>
+        <button id="btn-inc-tax" onclick="setTaxMode('inclusive')"
+          style="padding:8px 18px; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; background:transparent; color:#7a6a50;">
+          أسعار شاملة الضريبة
+        </button>
+      </div>
+    </div>
+    <div id="tax-mode-hint" style="margin-top:10px; font-size:13px; color:#7a6a50; background:#fdf6e8; border-radius:8px; padding:8px 12px;">
+      الأسعار التي ستدخلها <strong>لا تشمل الضريبة</strong> — سيتم إضافة 15% تلقائياً
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">البنود</div>
+    <div id="items-container"></div>
+    <button class="add-btn" onclick="addItem()">＋ إضافة بند جديد</button>
+  </div>
+
+  <div class="totals-card">
+    <div class="total-row">
+      <span>الإجمالي قبل الضريبة</span>
+      <span class="total-val" id="t-subtotal">0.00 ر.س</span>
+    </div>
+    <div class="total-row">
+      <span>الضريبة 15%</span>
+      <span class="total-val" id="t-tax">0.00 ر.س</span>
+    </div>
+    <div class="total-row final">
+      <span>صافي الفاتورة شامل الضريبة</span>
+      <span class="total-val" id="t-total">0.00 ر.س</span>
+    </div>
+  </div>
+
+  <button class="send-btn" onclick="sendWhatsApp()">📲 إرسال عبر واتساب</button>
+  <button class="copy-btn" onclick="copyText()">📋 نسخ بيانات الفاتورة</button>
+
+  <div class="footer">شركة الخيط الذهبي للمقاولات العامة &mdash; جميع الحقوق محفوظة</div>
+
+</div>
+
+<script>
+const UNITS = ['متر طولي','متر مربع','متر مكعب','كيلوغرام','طن','عدد','دفعة','خدمة','لتر','ساعة'];
+let itemCount = 0;
+let activeItems = [];
+
+function fmt(n) {
+  return Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ر.س';
+}
+
+function addItem() {
+  itemCount++;
+  const id = itemCount;
+  activeItems.push(id);
+  const unitsOptions = UNITS.map(u => `<option>${u}</option>`).join('');
+  const removeBtn = activeItems.length > 1
+    ? `<button class="remove-btn" onclick="removeItem(${id})">✕ حذف البند</button>`
+    : `<span></span>`;
+  const div = document.createElement('div');
+  div.className = 'item-card';
+  div.id = 'item-' + id;
+  div.innerHTML = `
+    <div class="item-header">
+      <span class="item-badge">البند ${id}</span>
+      ${removeBtn}
+    </div>
+    <div class="row">
+      <div class="field" style="min-width:100%;">
+        <label>البند / الوصف</label>
+        <input type="text" placeholder="اكتب وصف البند هنا..." id="desc-${id}">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>الوحدة</label>
+        <select id="unit-${id}">${unitsOptions}</select>
+      </div>
+      <div class="field">
+        <label>الكمية</label>
+        <input type="number" min="0" step="0.001" placeholder="0" id="qty-${id}" oninput="calcItem(${id})">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>السعر الإفرادي (ر.س)</label>
+        <input type="number" min="0" step="0.01" placeholder="0.00" id="price-${id}" oninput="calcItem(${id})">
+      </div>
+      <div class="field">
+        <label>إجمالي البند (قبل الضريبة)</label>
+        <div class="auto-val" id="line-${id}">0.00 ر.س</div>
+      </div>
+    </div>`;
+  document.getElementById('items-container').appendChild(div);
+}
+
+function removeItem(id) {
+  const card = document.getElementById('item-' + id);
+  if (card) card.remove();
+  activeItems = activeItems.filter(i => i !== id);
+  calcAll();
+}
+
+
+
+var taxMode = 'exclusive'; // 'exclusive' = prices without tax, 'inclusive' = prices include tax
+
+function setTaxMode(mode) {
+  taxMode = mode;
+  var btnEx  = document.getElementById('btn-ex-tax');
+  var btnInc = document.getElementById('btn-inc-tax');
+  var hint   = document.getElementById('tax-mode-hint');
+  if (mode === 'exclusive') {
+    btnEx.style.background  = '#1C243A'; btnEx.style.color  = '#C79A2D';
+    btnInc.style.background = 'transparent'; btnInc.style.color = '#7a6a50';
+    hint.innerHTML = 'الأسعار التي ستدخلها <strong>لا تشمل الضريبة</strong> — سيتم إضافة 15% تلقائياً';
+  } else {
+    btnInc.style.background = '#1C243A'; btnInc.style.color  = '#C79A2D';
+    btnEx.style.background  = 'transparent'; btnEx.style.color = '#7a6a50';
+    hint.innerHTML = 'الأسعار التي ستدخلها <strong>شاملة الضريبة</strong> — سيتم استخراج الضريبة تلقائياً';
+  }
+  calcAll();
+}
+
+function calcItem(id) {
+  const qty   = parseFloat(document.getElementById('qty-'  + id)?.value)   || 0;
+  const price = parseFloat(document.getElementById('price-' + id)?.value) || 0;
+  let lineNet;
+  if (taxMode === 'inclusive') {
+    lineNet = (qty * price) / 1.15;
+  } else {
+    lineNet = qty * price;
+  }
+  const el = document.getElementById('line-' + id);
+  if (el) el.textContent = fmt(lineNet);
+  calcAll();
+}
+
+function calcAll() {
+  let grossTotal = 0;
+  activeItems.forEach(id => {
+    if (!document.getElementById('item-' + id)) return;
+    const qty   = parseFloat(document.getElementById('qty-'  + id)?.value)   || 0;
+    const price = parseFloat(document.getElementById('price-' + id)?.value) || 0;
+    grossTotal += qty * price;
+  });
+  let sub, tax, total;
+  if (taxMode === 'inclusive') {
+    total = grossTotal;
+    sub   = total / 1.15;
+    tax   = total - sub;
+  } else {
+    sub   = grossTotal;
+    tax   = sub * 0.15;
+    total = sub + tax;
+  }
+  document.getElementById('t-subtotal').textContent = fmt(sub);
+  document.getElementById('t-tax').textContent      = fmt(tax);
+  document.getElementById('t-total').textContent    = fmt(total);
+}
+
+function buildText() {
+  const client = getClientName() || 'غير محدد';
+  const taxLabel = taxMode === 'inclusive' ? '(الأسعار المدخلة شاملة الضريبة)' : '(الأسعار المدخلة غير شاملة الضريبة)';
+  const date   = document.getElementById('inv-date').value || '-';
+  let lines = [];
+  activeItems.forEach(id => {
+    if (!document.getElementById('item-' + id)) return;
+    const desc  = document.getElementById('desc-'  + id)?.value  || '-';
+    const unit  = document.getElementById('unit-'  + id)?.value  || '';
+    const qty   = document.getElementById('qty-'   + id)?.value  || '0';
+    const price = document.getElementById('price-' + id)?.value || '0';
+    const line  = ((parseFloat(qty)||0) * (parseFloat(price)||0)).toFixed(2);
+    lines.push(`• ${desc}\n  الكمية: ${qty} ${unit}  |  السعر: ${price} ر.س  |  الإجمالي: ${line} ر.س`);
+  });
+  return `شركة الخيط الذهبي للمقاولات العامة\n` +
+         `فاتورة ${taxLabel}\n` +
+         `العميل: ${client}\n` +
+         `التاريخ: ${date}\n` +
+         `${'─'.repeat(35)}\n` +
+         `البنود:\n${lines.join('\n')}\n` +
+         `${'─'.repeat(35)}\n` +
+         `الإجمالي قبل الضريبة : ${document.getElementById('t-subtotal').textContent}\n` +
+         `الضريبة 15%           : ${document.getElementById('t-tax').textContent}\n` +
+         `صافي الفاتورة         : ${document.getElementById('t-total').textContent}`;
+}
+
+function sendWhatsApp() {
+  const client = document.getElementById('client').value;
+  if (!client) { alert('يرجى اختيار اسم العميل أولاً'); return; }
+  window.open('https://wa.me/?text=' + encodeURIComponent(buildText()), '_blank');
+}
+
+function copyText() {
+  const client = getClientName();
+  if (!client) { alert('يرجى اختيار اسم العميل أولاً'); return; }
+  navigator.clipboard.writeText(buildText()).then(() => {
+    alert('✅ تم نسخ بيانات الفاتورة بنجاح!');
+  }).catch(() => {
+    alert('تعذّر النسخ، جرّب من متصفح آخر');
+  });
+}
+
+
+// ── Default clients (always present) ──
+var DEFAULT_CLIENTS = [
+  'شركة الأمل للتجارة',
+  'مؤسسة النور',
+  'شركة الخليج الحديثة',
+  'مكتب الرياض للاستشارات',
+  'شركة الفجر للمقاولات'
+];
+
+function getSavedClients() {
+  try {
+    var raw = localStorage.getItem('gct_clients');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveClientsList(list) {
+  try { localStorage.setItem('gct_clients', JSON.stringify(list)); } catch(e) {}
+}
+
+function buildClientSelect() {
+  var sel = document.getElementById('client');
+  var current = sel.value;
+  sel.innerHTML = '<option value="">— اختر العميل —</option>';
+  var saved = getSavedClients();
+  var all = DEFAULT_CLIENTS.concat(saved);
+  all.forEach(function(name) {
+    var opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  // separator + new client option
+  var sep = document.createElement('option');
+  sep.disabled = true;
+  sep.textContent = '──────────────';
+  sel.appendChild(sep);
+  var newOpt = document.createElement('option');
+  newOpt.value = '__new__';
+  newOpt.textContent = '＋ عميل جديد...';
+  sel.appendChild(newOpt);
+  // restore selection if still valid
+  if (current) sel.value = current;
+}
+
+function toggleNewClient() {
+  var sel  = document.getElementById('client');
+  var wrap = document.getElementById('new-client-wrap');
+  var inp  = document.getElementById('client-new');
+  if (sel.value === '__new__') {
+    wrap.style.display = 'block';
+    inp.value = '';
+    inp.focus();
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function saveNewClient() {
+  var inp  = document.getElementById('client-new');
+  var name = inp.value.trim();
+  if (!name) { alert('يرجى كتابة اسم العميل أولاً'); inp.focus(); return; }
+
+  var saved = getSavedClients();
+  var all   = DEFAULT_CLIENTS.concat(saved);
+  if (all.indexOf(name) !== -1) { alert('هذا العميل موجود في القائمة مسبقاً'); return; }
+
+  saved.push(name);
+  saveClientsList(saved);
+  buildClientSelect();
+
+  // auto-select the new client
+  document.getElementById('client').value = name;
+  document.getElementById('new-client-wrap').style.display = 'none';
+  alert('تم حفظ العميل: ' + name);
+}
+
+function getClientName() {
+  var sel = document.getElementById('client');
+  if (sel.value === '__new__') {
+    return document.getElementById('client-new').value.trim();
+  }
+  return sel.value;
+}
+
+document.getElementById('inv-date').valueAsDate = new Date();
+buildClientSelect();
+addItem();
+</script>
+</body>
+</html>
